@@ -1,0 +1,102 @@
+body {
+  margin: 0;
+  font-family: Tahoma, Arial;
+  background: #250E0D;
+  color: #FFF2E5;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+  background: rgba(37,14,13,0.8);
+  backdrop-filter: blur(10px);
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+}
+.logo span {
+  color: #FF5B5B;
+}
+
+nav a {
+  color: #FFF2E5;
+  margin-left: 20px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+nav a:hover {
+  color: #FF5B5B;
+}
+
+.hero {
+  text-align: center;
+  padding: 80px 20px;
+}
+.hero h1 {
+  color: #FF5B5B;
+  font-size: 36px;
+}
+
+.packages {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 60px 20px;
+}
+
+.card {
+  background: rgba(255,242,229,0.12);
+  backdrop-filter: blur(15px);
+  border-radius: 40px;
+  padding: 30px;
+  width: 260px;
+  box-shadow: 0 0 25px rgba(255,91,91,0.15);
+  text-align: center;
+}
+
+.card h2 {
+  color: #FF5B5B;
+}
+
+.price {
+  font-size: 28px;
+  margin: 10px 0;
+}
+
+.card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.card button {
+  background: #FF5B5B;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  color: white;
+  margin-top: 15px;
+}
+
+.discount {
+  background: linear-gradient(90deg, #FF5B5B, #250E0D);
+  text-align: center;
+  padding: 50px;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .packages {
+    flex-direction: column;
+    align-items: center;
+  }
+}

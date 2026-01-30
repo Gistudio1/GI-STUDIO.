@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Order | GI STUDIO</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section class="hero">
+  <h1>طلب تصميم</h1>
+
+  <form class="card">
+    <p id="package"></p>
+
+    <input type="text" placeholder="اسم السيرفر / المشروع" required><br><br>
+    <textarea placeholder="تفاصيل الطلب" rows="4"></textarea><br><br>
+
+    <input type="text" placeholder="Discord Username"><br><br>
+
+    <button type="submit">Send Order</button>
+  </form>
+</section>
+
+<script>
+  document.getElementById("package").innerText =
+    "البكج المختار: " + localStorage.getItem("selectedPackage");
+</script>
+
+<script>
+const webhookURL = "https://discord.com/api/webhooks/1466920383054745693/gZUfxdkJjJjKkGx1SiccOb_MJaURwnlIfSgZbs4Q6FIvdu8HTPky_Q8IrsZVBwwJbS2i"; // الصق رابطك هنا
+
+document.querySelector("form").addEventListener("submit", async (e) => {
+  e.preventDefault(); // يمنع الصفحة من إعادة التحميل
+
+  const packageName = document.getElementById("package").innerText.replace("البكج المختار: ", "");
+  const serverName = e.target.querySelector('input[type="text"]').value;
+  const details = e.target.querySelector('textarea').value;
+  const discordUser = e.target.querySelectorAll('input[type="text"]')[1].value;
+
+  const payload = {
+    content: null,
+    embeds: [
+      {
+        title: `طلب جديد من GI STUDIO`,
+        color: 16729344,
+        fields: [
+          { name: "البكج المختار", value: packageName, inline: true },
+          { name: "اسم السيرفر/المشروع", value: serverName, inline: true },
+          { name: "تفاصيل الطلب", value: details || "لا توجد تفاصيل" },
+          { name: "Discord", value: discordUser || "لم يتم إدخال Discord" }
+        ],
+        timestamp: new Date().toISOString()
+      }
+    ]
+  };
+
+  try {
+    const response = await fetch(webhookURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      alert("تم إرسال الطلب بنجاح ✅");
+      e.target.reset();
+    } else {
+      alert("حدث خطأ أثناء إرسال الطلب ❌");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("خطأ في الاتصال بالـ Discord Webhook ❌");
+  }
+});
+</script>
+
+</body>
+</html>
