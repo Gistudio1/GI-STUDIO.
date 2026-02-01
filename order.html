@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Order | GI STUDIO</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Anti-Spam Style -->
+  <style>
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #cooldownBox {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 14px;
+      background: rgba(255, 91, 91, 0.12);
+      border: 1px solid #ff5b5b;
+      color: #ff5b5b;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<section class="hero">
+  <h1>طلب تصميم</h1>
+
+  <form class="card" id="orderForm">
+    <p id="package"></p>
+
+    <input type="text" placeholder="اسم السيرفر / المشروع" required><br><br>
+    <textarea placeholder="تفاصيل الطلب" rows="4"></textarea><br><br>
+
+    <input type="text" placeholder="Discord Username"><br><br>
+
+    <button type="submit" id="sendBtn">Send Order</button>
+    <div id="cooldownBox"></div>
+  </form>
+</section>
+
+<script>
+  document.getElementById("package").innerText =
+    "البكج المختار: " + localStorage.getItem("selectedPackage");
+</script>
+
+<script>
+/* ================== Anti-Spam System ================== */
+const COOLDOWN = 86400000; // 24 ساعة
+const btn = document.getElementById("sendBtn");
+const box = document.getElementById("cooldownBox");
+
+function formatTime(ms) {
+  const h = Math.floor(ms / (1000 * 60 * 60));
+  const m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  const s = Math.floor((ms % (1000 * 60)) / 1000);
+  return `${h}س ${m}د ${s}ث`;
+}
+
+function checkCooldown() {
+  const last = localStorage.getItem("gi_last_order");
+  if (!last) return;
+
+  const diff = COOLDOWN - (Date.now() - last);
+  if (diff > 0) {
+    btn.disabled = true;
+    box.style.display = "block";
+
+    const timer = setInterval(() => {
+      const remaining = COOLDOWN - (Date.now() - last);
+      if (remaining <= 0) {
+        clearInterval(timer);
+        btn.disabled = false;
+        box.style.display = "none";
+        localStorage.removeItem("gi_last_order");
+      } else {
+         box.innerHTML = ` لا يمكنك إرسال طلب جديد<br> المتبقي: ${formatTime(remaining)}`;
+      }
+    }, 1000);
+  }
+}
+
+checkCooldown();
+/* ====================================================== */
+</script>
+
+<script>
+/* ================= Discord Webhook ================= */
+const webhookURL = "https://discord.com/api/webhooks/1466920383054745693/gZUfxdkJjJjKkGx1SiccOb_MJaURwnlIfSgZbs4Q6FIvdu8HTPky_Q8IrsZVBwwJbS2iا";
+
+document.getElementById("orderForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Anti-Spam lock
+  localStorage.setItem("gi_last_order", Date.now());
+  btn.disabled = true;
+
+  const packageName = document.getElementById("package").innerText.replace("البكج المختار: ", "");
+  const serverName = e.target.querySelector('input[type="text"]').value;
+  const details = e.target.querySelector('textarea').value;
+  const discordUser = e.target.querySelectorAll('input[type="text"]')[1].value;
+
+  const payload = {
+    embeds: [{
+      title: "طلب جديد من GI STUDIO",
+      color: 16729344,
+      fields: [
+        { name: "البكج المختار", value: packageName, inline: true },
+        { name: "اسم السيرفر/المشروع", value: serverName, inline: true },
+        { name: "تفاصيل الطلب", value: details || "لا توجد تفاصيل" },
+        { name: "Discord", value: discordUser || "غير مذكور" }
+      ],
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  try {
+    const response = await fetch(webhookURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      box.style.display = "block";
+      box.style.borderColor = "#00ff99";
+      box.style.color = "#00ff99";
+      box.innerHTML = " تم إرسال الطلب بنجاح يرجى الذهاب الى الدسكورد و انتظار ارسال رسالة في الخاص";
+      e.target.reset();
+    } else {
+      alert("فشل الإرسال ❌");
+    }
+  } catch (err) {
+    alert("خطأ في الاتصال ❌");
+  }
+});
+/* ================================================ */
+</script>
+
+</body>
+</html>
